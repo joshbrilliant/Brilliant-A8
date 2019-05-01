@@ -1,0 +1,354 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">        
+        
+        <style>
+            /* put your css styles here...*/
+            .closedBox
+            {
+                background-color: black
+            }
+            
+            .box 
+            {
+                   padding: 20px;
+                   height: 200px;
+            }
+            
+            #loginBtn, #logoutBtn, #registerBtn, #resetScoreBtn
+            {
+                display: none;
+            }
+            
+            a, a:hover
+            {
+                color: white;    
+            }
+            .selected
+            {
+                color: blue;
+            }
+            
+            .openBox
+            {
+                background-color: red
+            }
+            
+            .treasure
+            {
+                background-color: green
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="jumbotron jumbotron-fluid mb-0">
+            <div class="container">
+                <h1 class="display-4">Treaure Hunt</h1>
+                <p class="lead">Find the treasure fast!</p>
+            </div>
+        </div>        
+        <div class="">
+            <ul class="nav justify-content-start border p-2 bg-dark text-light">
+                <li class="nav-item">
+                    <a href="#" id='resetScoreBtn' class='nav-link'>Reset Low Score</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id='loginBtn' class='nav-link'>Login</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id='registerBtn' class='nav-link'>Register</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id='logoutBtn' class='nav-link'>Logout</a>
+                </li>
+                <li class="nav-item">
+                    <span id="msg"></span>
+                </li>
+            </ul>   
+            <div id="boxes" class = "row"></div>
+             <p>Guesses: <span id='guesses'>0</span> Low Score: <span id ='lowScore'>N/A</span></p>
+            
+        </div>
+        
+        
+        
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>        
+        
+        <!--put your modal dialogs here...-->
+        <div id='loginDlg' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-light">
+                        <h5 class="modal-title">Login</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Login</h4>
+                        <form class="border border-primary p-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                            </div>
+                        </form> 
+                    </div>
+                    <div class="modal-footer">
+                        <button id='confirmLoginBtn' type="button" class="btn btn-primary">Login</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>    
+        
+         <div id='registerDlg' class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-light">
+                        <h5 class="modal-title">Register</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Register</h4>
+                        <form class="border border-primary p-3">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="regEmail" name="regEmail" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="regPassword" name="regPassword" placeholder="Password">
+                            </div>
+                        </form> 
+                    </div>
+                    <div class="modal-footer">
+                        <button id='confirmRegisterBtn' type="button" class="btn btn-primary">Register</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div> 
+        
+        <div id='confirm' class="modal" tabindex="-1" role="dialog">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-dark text-light">
+                <h5 class="modal-title">Play Again?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>Would you like to play again?</p>
+              </div>
+              <div class="modal-footer">
+                <button id='yes' type="button" class="btn btn-primary">Yes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+              </div>
+            </div>
+          </div>
+        </div>         
+        
+        <script>
+        /* global $ */
+        // put your JavaScript code here...
+        
+        $(document).ready(function() 
+        {
+            //model
+            let model = {};
+            function initializeModel()
+            {
+                sendRequest("whoIsLoggedIn", function()
+                {
+                    if (model.error == undefined)
+                        sendRequest("listSongs");    
+                });
+                model.count = 16;
+                model.selected = -1;
+                model.boxList = [];
+                model.treasure = Math.floor(Math.random() * model.count);
+                model.guesses = 0;
+                model.gameOver = false;
+                model.lowScore;
+                model.error;
+                model.result;
+                for(var j = 0; j < model.count; j++)
+                {
+                    if(j == model.treasure)
+                        model.boxList.push({treasure: true, flipped: false});
+                    else
+                        model.boxList.push({treasure: false, flipped: false});
+                }
+                
+            }
+        
+            //view
+            function updateView()
+            {
+                
+                $('#boxes').empty();
+                if (model.result == undefined)
+                {
+                    $("#msg").text(model.error);
+                    
+                    $("#logoutBtn").hide();
+                    $("#loginBtn").show();
+                    $("#registerBtn").show();
+                    $("#resetScoreBtn").hide();
+                }
+                else
+                {
+                    $("#logoutBtn").show();
+                    $("#resetScoreBtn").show();
+                    $("#loginBtn").hide();
+                    $("#registerBtn").hide();
+                    
+                    if (model.result.email == undefined)
+                    {
+                        updateView();
+                    }
+                    else
+                    {
+                        for (var i in model.boxList)
+                        {
+                            let item = $("<div></div>");
+                            item.addClass("col-6").addClass("box").addClass("border");
+                            item.attr("id", i);
+                
+                            if(model.boxList[i].treasure == true && model.boxList[i].flipped == true)
+                            {
+                                item.addClass("treasure");
+                            }
+                            else if(model.boxList[i].treasure == false && model.boxList[i].flipped == true)
+                            {   
+                                item.addClass("openBox");
+                            }
+                            else
+                                item.addClass("closedBox");
+                            $('#boxes').append(item);
+                        }
+                        $("#guess").text(model.guesses);
+                        $("#lowScore").text(model.lowScore);
+                        $("#msg").text("Hello " + model.result.email);
+                    }
+                }
+            }   
+            
+            //controller
+            function sendRequest(url, callback)
+            {
+                var jqxhr = $.get(url);
+                jqxhr.done(function(json) 
+                {
+                    model = json;
+                    updateView();
+                    if (callback !== undefined)
+                        callback();
+                });
+                jqxhr.fail(function(json) 
+                {
+                    let error = JSON.stringify(json);
+                    model.error = error;
+                    updateView();
+                });
+            }
+            $('#loginBtn').click(function() 
+            {
+                $('#password').val('');
+                $('#loginDlg').modal('show');
+            });
+            $('#registerBtn').click(function() 
+            {
+                $('#regEmail').val('');
+                $('#regPassword').val('');
+                $('#registerDlg').modal('show');
+            });
+            $('#logoutBtn').click(function() 
+            {
+                sendRequest("logout", function() 
+                {
+                    if (model.error != undefined)
+                    {
+                        $("#songs").empty();
+                    }
+                });
+            });
+            
+            $('#confirmLoginBtn').click(function() 
+            {
+                let email = $('#email').val().trim();
+                let password = $('#password').val().trim();
+                
+                sendRequest("login?email="+email+"&password="+password, function ()
+                {
+                    if (model.error == undefined)
+                        sendRequest("listSongs");    
+                });
+                $('#loginDlg').modal('hide');
+            });
+            $('#confirmRegisterBtn').click(function() 
+            {
+                let email = $('#regEmail').val().trim();
+                let password = $('#regPassword').val().trim();
+                sendRequest("register?email="+email+"&password="+password, function () 
+                { 
+                    if (model.error == undefined)
+                        sendRequest("listSongs");
+                });
+                
+                $('#registerDlg').modal('hide');
+            });
+            
+            $(document).on("click",".closedBox",function()
+            {
+                if(model.gameOver == false)
+                {
+                    model.guesses++;
+                    
+                    model.selected = $(this).attr('id');
+                    model.boxList[model.selected].flipped = true;
+                    updateView();
+                    console.log(model.guesses);
+                    if(model.selected == model.treasure)
+                    {
+                        console.log("You've found the treasure!");
+                        model.gameOver = true;
+                        winGameModal();
+                    }
+                }
+            });
+            
+            function winGameModal()
+            {
+                $('#confirm').modal('show');
+                $('#yes').click(function() 
+                {
+                    $('#confirm').modal('hide');
+                    $("#confirm").on('hide', function () 
+                    {
+                        window.location.reload();
+                    });
+                    initializeModel();
+                    updateView();
+                });
+                $('#btn-secondary').click(function()
+                {
+                    model.gameOver = true;
+                    $('#confirm').modal('hide');
+                });
+                
+            }
+            
+            initializeModel();
+            updateView();
+        });
+        </script>
+    </body>
+
+</html>
